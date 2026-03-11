@@ -1,0 +1,145 @@
+body {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 12px;
+    font-family: sans-serif;
+    background: #f7f7f7;
+}
+
+/* 見出し */
+h1, h2 {
+    text-align: center;
+}
+
+/* 入力欄 */
+input[type="text"],
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;  /* スマホで拡大されない */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ボタン */
+button {
+    font-size: 16px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    background: #4a90e2;
+    color: #fff;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #357abd;
+}
+
+/* エラー  */
+.error {
+    color: #d00;
+    text-align: center;
+}
+
+#posts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+}
+
+/* 投稿 */
+.post {
+  display: inline-block;
+  width: fit-content;
+  align-self: flex-start;
+  max-width: 60%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+/* 投稿者名 */
+.post strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* 投稿日時 */
+.post small{
+    display: block;
+    font-size: 0.7em;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+/* コメント */
+.post p {
+    margin-top: 8px;
+    white-space: pre-wrap;
+}
+
+.post.user {
+    background-color: #419df3;
+    color: white;
+    align-self: flex-end;
+    margin-left:auto;
+}
+
+.post.ai {
+    background-color: #e5e5ea;
+    color: black;
+    align-self: flex-start;
+    margin-right: auto;
+}
+
+.message-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.message-wrapper.user {
+    align-items: flex-end;
+}
+
+.message-wrapper.ai {
+    align-items: flex-start;
+}
+
+/* 既読表示（外に出す） */
+.read-status {
+    font-size: 11px;
+    margin-top: 4px;
+    color: #888;
+}
+
+/* user側は右寄せ */
+.message-wrapper.user .read-status {
+    text-align: right;
+}
+
+/* ai側は左寄せ */
+.message-wrapper.ai .read-status {
+    text-align: left;
+}
+
+.dots::after {
+    content: '';
+    animation: dots 1s steps(3, end) infinite;
+}
+
+.typing-dots::after {
+    content: '';
+    animation: dots 1.5s infinite steps(3);
+}
+
+@keyframes dots {
+    0%   { content: ''; }
+    33%  { content: '.'; }
+    66%  { content: '..'; }
+    100% { content: '...'; }
+}
