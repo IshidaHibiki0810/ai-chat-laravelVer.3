@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // memoriesテーブルを作成
         Schema::create('memories', function (Blueprint $table) {
-            $table->id();
-            $table->string('role'); // user / ai
-            $table->text('content'); // 発話内容
-            $table->json('tags')->nullable(); // 任意タグ
-            $table->json('metadata')->nullable(); // 追加情報
-            $table->timestamps(); // created_at, updated_at
+            $table->integer('id')->primary();
+            $table->integer('user_id')->nullable(false); // NOT NULL, idの次に配置
+            $table->string('role');
+            $table->text('content');
+            $table->text('tags')->nullable();
+            $table->text('metadata')->nullable();
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
         });
     }
 

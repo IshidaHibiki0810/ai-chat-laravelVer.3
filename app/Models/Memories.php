@@ -14,6 +14,7 @@ class Memories extends Model
 
     // 一括代入可能なカラム
     protected $fillable = [
+        'user_id', 
         'role',     // user / ai
         'content',  // 発話内容
         'tags',     // JSONカラム

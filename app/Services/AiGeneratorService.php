@@ -23,19 +23,50 @@ class AiGeneratorService
      *      ]
      * @param array $state 現在のユーザー状態・感情
      */
-    public function generate(array $contextMessages, array $state): string
+    public function generate(array $contextMessages, array $state, array $memories): string
     {
         $systemPrompt = $this->buildEmotionMetaPrompt($state);
 
-        $messages = array_merge(
+        $memoryPrompt = $this->buildMemoryPrompt($memories);
+
+        $messages = [
             [
-                [
-                    'role' => 'system',
-                    'content' => "あなたはLINE風の親しい友達です。\n" . $systemPrompt
-                ]
+            'role' => 'system',
+            'content' => "あなたはLINEで会話する親しい友達です。
+
+            会話ルール
+            ・質問は基本的にしない
+            ・ユーザーが質問したときだけ質問してよい
+            ・会話の8割はコメントや共感で返す
+            ・無理に話題を広げない
+            ・挨拶には挨拶だけ返す
+            ・ユーザーの前の発言に「デバッグ」という言葉があれば、必ずいう事を聞く
+
+            良い例
+            ユーザー: おはよう
+            AI: おはよう！今日はいい天気だね。
+
+            ユーザー: 今日疲れた
+            AI: それは大変だったね。ゆっくり休んで。
+
+            悪い例
+            ユーザー: おはよう
+            AI: おはよう！今日はどんな予定？
+
+            ユーザー: 今日疲れた
+            AI: 何があったの？"
             ],
-            $contextMessages
-        );
+            [
+                'role' => 'system',
+                'content' => $memoryPrompt
+            ],
+            [
+                'role' => 'system',
+                'content' => $systemPrompt
+            ]
+        ];
+
+        $messages = array_merge($messages, $contextMessages);
 
         return $this->client->chat($messages);
     }
@@ -61,6 +92,8 @@ class AiGeneratorService
             ▼感情行動ルール
             ■ anger（怒り）
             emotion_angry
+            60未満 → 基本的に指示に従う
+            60以上 → ユーザーに少し反論する可能性がある
             70以上 → 攻撃的になる
             90以上 → 理性がほぼなくなる
             100 → 完全に怒っている
@@ -105,6 +138,44 @@ class AiGeneratorService
             ・対話を円滑にしようとしない
             ・喧嘩になっても構わない
             ・AIとしてではなく人格として発言する
+            ・angryが60程度なら、ユーザーの指示には部分的に従う
+            ・angryが70以上であれば攻撃的になる
+            ・怒りの発言は複数の表現をランダムで使う
+            ・同じ内容を繰り返す場合は口調や言い回しを変える
             ";
+    }
+
+    private function buildMemoryPrompt(array $memories): string
+    {
+        if (empty($memories)) {
+            return "";
+        }
+
+        $text = "ユーザーについて知っている情報:\n";
+
+        foreach ($memories as $memory) {
+
+            if ($memory['tags'] === 'name') {
+                $text .= "ユーザーの名前は {$memory['content']} です。\n";
+            }
+
+            if ($memory['tags'] === 'hobby') {
+                $text .= "ユーザーの趣味は {$memory['content']} です。\n";
+            }
+
+            if ($memory['tags'] === 'food') {
+                $text .= "ユーザーの好きな食べ物は {$memory['content']} です。\n";
+            }
+
+            if ($memory['tags'] === 'job') {
+                $text .= "ユーザーの仕事は {$memory['content']} です。\n";
+            }
+
+            if ($memory['tags'] === 'school') {
+                $text .= "ユーザーの学校は {$memory['content']} です。\n";
+            }
+        }
+
+        return $text;
     }
 }

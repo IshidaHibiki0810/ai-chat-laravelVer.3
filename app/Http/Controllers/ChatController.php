@@ -6,21 +6,25 @@ use Illuminate\Http\Request;
 use App\Application\Chat\ChatApplicationService;
 use App\Domain\Emotion\EmotionDomainService;
 use App\Repositories\MessageRepository;
+use App\Domain\Memory\MemoryDomainService;
 
 class ChatController extends Controller
 {
     private ChatApplicationService $chatApplicationService;
     private EmotionDomainService $emotionDomainService;
     private MessageRepository $messageRepository;
+    private MemoryDomainService $memoryService;
 
     public function __construct(
         ChatApplicationService $chatApplicationService,
         EmotionDomainService $emotionDomainService,
-        MessageRepository $messageRepository
+        MessageRepository $messageRepository,
+        MemoryDomainService $memoryService
     ) {
         $this->chatApplicationService = $chatApplicationService;
         $this->emotionDomainService = $emotionDomainService;
         $this->messageRepository = $messageRepository;
+        $this->memoryService = $memoryService;
     }
 
     /**
@@ -93,6 +97,8 @@ class ChatController extends Controller
         $this->messageRepository->deleteAllByUser($userId);
 
         $aiState = $this->emotionDomainService->resetState($userId);
+
+        $this->memoryService->clearMemoriesByUser($userId);
 
         return response()->json([
             'status' => 'ok',

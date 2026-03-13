@@ -79,6 +79,7 @@ class EmotionAiService
 
             ルール
             - 感情変化は -20〜+20
+            - 謝罪の言葉があれば、angryを減少させる
             - 0〜100の範囲
             - 必ずJSONのみ出力
 
